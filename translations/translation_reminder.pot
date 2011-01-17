@@ -1,0 +1,70 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  translation_reminder.module: n/a
+#  translation_reminder.info: n/a
+#  translation_reminder.js: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-08-14 11:10-0500\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: translation_reminder.module:37
+msgid "Translation Options"
+msgstr ""
+
+#: translation_reminder.module:38
+msgid "Which action would you like to take after saving?"
+msgstr ""
+
+#: translation_reminder.module:41
+msgid "Do not create translation"
+msgstr ""
+
+#: translation_reminder.module:50
+msgid "Create @language translation"
+msgstr ""
+
+#: translation_reminder.module:77
+msgid "Edit @language translation"
+msgstr ""
+
+#: translation_reminder.module:82
+msgid "Do not edit translations"
+msgstr ""
+
+#: translation_reminder.module:85
+msgid "Do not create or edit translations"
+msgstr ""
+
+#: translation_reminder.module:123
+msgid "Enter the information for the @language version below."
+msgstr ""
+
+#: translation_reminder.info:0
+msgid "Translation Reminder"
+msgstr ""
+
+#: translation_reminder.info:0
+msgid "Improves node translation workflow."
+msgstr ""
+
+#: translation_reminder.info:0
+msgid "Multilanguage"
+msgstr ""
+
+#: translation_reminder.js:0
+msgid "Translation is disabled for language neutral content."
+msgstr ""
+

@@ -1,0 +1,70 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  translation_reminder.module: n/a
+#  translation_reminder.info: n/a
+#  translation_reminder.js: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-08-14 11:10-0500\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+#"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: translation_reminder.module:37
+msgid "Translation Options"
+msgstr "Options de traductions"
+
+#: translation_reminder.module:38
+msgid "Which action would you like to take after saving?"
+msgstr "Quelle action aimeriez-vous entreprendre après l'enregistrement?"
+
+#: translation_reminder.module:41
+msgid "Do not create translation"
+msgstr "Ne pas créer de traduction"
+
+#: translation_reminder.module:50
+msgid "Create @language translation"
+msgstr "Créer traduction en @language"
+
+#: translation_reminder.module:77
+msgid "Edit @language translation"
+msgstr "Modifier traduction en @language"
+
+#: translation_reminder.module:82
+msgid "Do not edit translations"
+msgstr "Ne pas modifer les traductions"
+
+#: translation_reminder.module:85
+msgid "Do not create or edit translations"
+msgstr "Ne pas créer ou modifier les traductions"
+
+#: translation_reminder.module:123
+msgid "Enter the information for the @language version below."
+msgstr "Entrez les informations pour la version en @language ci-dessous."
+
+#: translation_reminder.info:0
+msgid "Translation Reminder"
+msgstr ""
+
+#: translation_reminder.info:0
+msgid "Improves node translation workflow."
+msgstr ""
+
+#: translation_reminder.info:0
+msgid "Multilanguage"
+msgstr ""
+
+#: translation_reminder.js:0
+msgid "Translation is disabled for language neutral content."
+msgstr "La traduction est désactivée pour le contenu qui est indépendant de la langue."
+

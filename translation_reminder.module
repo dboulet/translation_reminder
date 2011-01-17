@@ -1,0 +1,136 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Improves node translation workflow by adding options to node form.
+ */
+ 
+/**
+ * Implementation of hook_init().
+ */
+function translation_reminder_init() {
+  // Add js and css to node form pages
+  // We can't do this from hook_form_alter() because it won't get called for node preview pages
+  if (arg(0) == 'node' && arg(1) == 'add' or arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
+    drupal_add_js(drupal_get_path('module', 'translation_reminder') .'/translation_reminder.js');
+    drupal_add_css(drupal_get_path('module', 'translation_reminder') .'/translation_reminder.css');
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function translation_reminder_form_alter(&$form, $form_state, $form_id) {
+  if (preg_match('/_node_form$/', $form_id)) {
+    $languages = language_list();
+    $node = $form['#node'];
+    // Only display if more than one language is available
+    // and if node is translatable
+    if (count($languages) > 1 && variable_get('language_content_type_'. $node->type, 0) > 1) {
+      include_once './includes/locale.inc';
+      $query = _locale_translate_seek_query();
+      // Create form item
+      $form['translation_options'] = array(
+        '#attributes' => array('class' => 'translation-reminder-options'),
+        '#type' => 'radios',
+        '#title' => t('Translation Options'),
+        '#description' => t('Which action would you like to take after saving?'),
+        '#default_value' => '',
+        '#options' => array(
+          '' => t('Do not create translation'),
+        ),
+        // Give item heavy weight to display close to save button.
+        '#weight' => 101,
+        '#prefix' => '<div id="translation-reminder-options" class="warning">',
+        '#suffix' => '</div>',
+      );
+      // Add translate option for each active language
+      foreach ($languages as $language) {
+        $form['translation_options']['#options'][$language->language] = t('Create @language translation', array('@language' => t($language->name)));
+      }
+      // Editing translation
+      if (isset($form['nid']['#value']) && !empty($form['nid']['#value'])) {
+        $nid = $form['nid']['#value'];
+      }
+      // Creating new translation
+      else if (isset($query['translation']) && !empty($query['translation'])) {
+        $nid = $query['translation'];
+        if (!empty($query['language'])) {
+          // Remove option to translate into current node language
+          unset($form['translation_options']['#options'][$query['language']]);
+        }
+      }
+      if (is_numeric($nid)) {
+        $result = db_fetch_object(db_query("SELECT n.tnid, n.nid, n.title, n.language FROM {node} n WHERE n.nid = '%d' LIMIT 1", $nid));
+        $tnid = $result->tnid;
+        $translations = $tnid > 0 ? translation_node_get_translations($tnid) : array($result->language => $result);
+        if (is_array($translations)) {
+          $options = array();
+          foreach ($translations as $lang => $node) {
+            // Remove option to translate into current node language
+            if ($node->nid == $nid && $lang == $form['#node']->language && !empty($lang)) {
+              unset($form['translation_options']['#options'][$lang]);
+            }
+            // Otherwise add option to edit existing translation
+            else if (!empty($lang)) {
+              $options[$lang] = t('Edit @language translation', array('@language' => t($languages[$lang]->name)));
+            }
+          }
+          if (!empty($options)) {
+            if ((count($form['translation_options']['#options']) - count($options)) == 1) {
+              $options[''] = t('Do not edit translations');
+            }
+            else {
+              $options[''] = t('Do not create or edit translations');
+            }
+            $form['translation_options']['#options'] = array_merge($form['translation_options']['#options'], $options);
+          }
+        }
+      }
+      // Process form after node_form_submit()
+      $form['buttons']['submit']['#submit'][] = 'translation_reminder_node_form_submit';
+    }
+  }
+}
+
+/**
+ * Process node form.
+ */
+function translation_reminder_node_form_submit($form, &$form_state) {
+  global $language;
+  $languages = language_list();
+  if (!empty($form_state['values']['translation_options'])) {
+    $nid = $form_state['nid'];
+    $translation_lang = $form_state['values']['translation_options'];
+  //drupal_set_message('Create or edit '. $translation_lang .' translation for node '. $nid);
+    $tnid = db_result(db_query("SELECT n.tnid FROM {node} n WHERE n.nid = '%d' LIMIT 1", $nid));
+    $translations = $tnid > 0 ? translation_node_get_translations($tnid) : array();
+    if (in_array($translation_lang, array_keys($translations))) {
+      // Translation exists
+      $redirect = array('node/'. $translations[$translation_lang]->nid .'/edit', 'query' => array());
+    }
+    else if ($form_state['node']['language'] != $translation_lang) {
+      // Create new translation
+      $redirect = array(
+        'node/add/'. str_replace('_', '-', $form_state['node']['type']),
+        'query' => array(
+          'translation' => $nid,
+          'language' => $translation_lang,
+        ),
+      );
+      $name = $languages[$translation_lang]->name;
+      drupal_set_message(t('Enter the information for the @language version below.', array('@language' => t($name))));
+    }
+    if (!empty($redirect)) {
+      //Switch user language?
+      $language = variable_get('i18n_translation_switch', 0) ? $languages[$translation_lang] : $language->language ;
+      if (isset($_REQUEST['destination'])) {
+        $destination = array('destination' => $_REQUEST['destination']);
+        $redirect['query'] = array_merge($redirect['query'], $destination);
+        unset($_REQUEST['destination']);
+      }
+      $form_state['redirect'] =  $redirect;
+    }
+  }
+}

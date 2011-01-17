@@ -1,0 +1,15 @@
+/* Styles for Translation Reminder module */
+
+.node-form #translation-reminder-options {
+  padding: 6px;
+}
+
+.node-form #translation-reminder-options > .form-item {
+  margin: 0;
+}
+
+.node-form #translation-reminder-options.disabled label,
+.node-form #translation-reminder-options.disabled .description,
+.node-form #translation-reminder-options.disabled input {
+  color: #bbb;
+}
