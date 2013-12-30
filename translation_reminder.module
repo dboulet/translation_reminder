@@ -1,11 +1,9 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Improves node translation workflow by adding options to node form.
  */
- 
+
 /**
  * Implementation of hook_init().
  */

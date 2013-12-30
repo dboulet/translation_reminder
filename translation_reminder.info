@@ -1,4 +1,3 @@
-; $Id$
 name = Translation Reminder
 description = Improves node translation workflow.
 dependencies[] = translation
