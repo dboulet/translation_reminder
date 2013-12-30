@@ -8,11 +8,13 @@
  * Implementation of hook_init().
  */
 function translation_reminder_init() {
-  // Add js and css to node form pages
-  // We can't do this from hook_form_alter() because it won't get called for node preview pages
+  // Add JS and CSS to node form pages.
+  // We can’t do this in hook_form_alter() because it won’t get called
+  // for node preview pages.
   if (arg(0) == 'node' && arg(1) == 'add' or arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
-    drupal_add_js(drupal_get_path('module', 'translation_reminder') .'/translation_reminder.js');
-    drupal_add_css(drupal_get_path('module', 'translation_reminder') .'/translation_reminder.css');
+    $module_path = drupal_get_path('module', 'translation_reminder');
+    drupal_add_js($module_path . '/translation_reminder.js');
+    drupal_add_css($module_path . '/translation_reminder.css');
   }
 }
 
@@ -23,12 +25,12 @@ function translation_reminder_form_alter(&$form, $form_state, $form_id) {
   if (preg_match('/_node_form$/', $form_id)) {
     $languages = language_list();
     $node = $form['#node'];
-    // Only display if more than one language is available
-    // and if node is translatable
-    if (count($languages) > 1 && variable_get('language_content_type_'. $node->type, 0) > 1) {
+    // Only display if more than one language is available and
+    // if node is translatable.
+    if (count($languages) > 1 && variable_get('language_content_type_' . $node->type, 0) > 1) {
       include_once './includes/locale.inc';
       $query = _locale_translate_seek_query();
-      // Create form item
+      // Create form item.
       $form['translation_options'] = array(
         '#attributes' => array('class' => 'translation-reminder-options'),
         '#type' => 'radios',
@@ -43,19 +45,19 @@ function translation_reminder_form_alter(&$form, $form_state, $form_id) {
         '#prefix' => '<div id="translation-reminder-options" class="warning">',
         '#suffix' => '</div>',
       );
-      // Add translate option for each active language
+      // Add translate option for each active language.
       foreach ($languages as $language) {
         $form['translation_options']['#options'][$language->language] = t('Create @language translation', array('@language' => t($language->name)));
       }
-      // Editing translation
+      // Editing translation.
       if (isset($form['nid']['#value']) && !empty($form['nid']['#value'])) {
         $nid = $form['nid']['#value'];
       }
-      // Creating new translation
+      // Creating new translation.
       else if (isset($query['translation']) && !empty($query['translation'])) {
         $nid = $query['translation'];
         if (!empty($query['language'])) {
-          // Remove option to translate into current node language
+          // Remove option to translate into current node language.
           unset($form['translation_options']['#options'][$query['language']]);
         }
       }
@@ -66,11 +68,11 @@ function translation_reminder_form_alter(&$form, $form_state, $form_id) {
         if (is_array($translations)) {
           $options = array();
           foreach ($translations as $lang => $node) {
-            // Remove option to translate into current node language
+            // Remove option to translate into current node language.
             if ($node->nid == $nid && $lang == $form['#node']->language && !empty($lang)) {
               unset($form['translation_options']['#options'][$lang]);
             }
-            // Otherwise add option to edit existing translation
+            // Otherwise add option to edit existing translation.
             else if (!empty($lang)) {
               $options[$lang] = t('Edit @language translation', array('@language' => t($languages[$lang]->name)));
             }
@@ -86,7 +88,7 @@ function translation_reminder_form_alter(&$form, $form_state, $form_id) {
           }
         }
       }
-      // Process form after node_form_submit()
+      // Process form after node_form_submit().
       $form['buttons']['submit']['#submit'][] = 'translation_reminder_node_form_submit';
     }
   }
@@ -101,17 +103,16 @@ function translation_reminder_node_form_submit($form, &$form_state) {
   if (!empty($form_state['values']['translation_options'])) {
     $nid = $form_state['nid'];
     $translation_lang = $form_state['values']['translation_options'];
-  //drupal_set_message('Create or edit '. $translation_lang .' translation for node '. $nid);
     $tnid = db_result(db_query("SELECT n.tnid FROM {node} n WHERE n.nid = '%d' LIMIT 1", $nid));
     $translations = $tnid > 0 ? translation_node_get_translations($tnid) : array();
     if (in_array($translation_lang, array_keys($translations))) {
-      // Translation exists
-      $redirect = array('node/'. $translations[$translation_lang]->nid .'/edit', 'query' => array());
+      // Translation exists.
+      $redirect = array('node/' . $translations[$translation_lang]->nid . '/edit', 'query' => array());
     }
     else if ($form_state['node']['language'] != $translation_lang) {
-      // Create new translation
+      // Create new translation.
       $redirect = array(
-        'node/add/'. str_replace('_', '-', $form_state['node']['type']),
+        'node/add/' . str_replace('_', '-', $form_state['node']['type']),
         'query' => array(
           'translation' => $nid,
           'language' => $translation_lang,
